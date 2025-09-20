@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Article Processor - AI-Powered Analysis</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-brain"></i>
+                    <h1>Article Processor</h1>
+                </div>
+                <p class="subtitle">AI-Powered Article Analysis & Insights</p>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-paper-plane"></i> Submit Article for Analysis</h2>
+                    <p>Enter your email and article URL to get AI-generated summary and insights</p>
+                </div>
+
+                <form id="articleForm" class="form">
+                    <div class="form-group">
+                        <label for="email" class="form-label">
+                            <i class="fas fa-envelope"></i> Email Address
+                        </label>
+                        <input 
+                            type="email" 
+                            id="email" 
+                            name="email" 
+                            class="form-input" 
+                            placeholder="Enter your email address"
+                            required
+                        >
+                        <div class="error-message" id="emailError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="articleUrl" class="form-label">
+                            <i class="fas fa-link"></i> Article URL
+                        </label>
+                        <input 
+                            type="url" 
+                            id="articleUrl" 
+                            name="article_url" 
+                            class="form-input" 
+                            placeholder="https://example.com/article"
+                            required
+                        >
+                        <div class="error-message" id="urlError"></div>
+                    </div>
+
+                    <button type="submit" class="submit-btn" id="submitBtn">
+                        <i class="fas fa-magic"></i>
+                        <span>Process Article</span>
+                        <div class="loading-spinner" id="loadingSpinner"></div>
+                    </button>
+                </form>
+
+                <!-- Results Section -->
+                <div class="results-section" id="resultsSection" style="display: none;">
+                    <div class="result-card success" id="successResult">
+                        <div class="result-header">
+                            <i class="fas fa-check-circle"></i>
+                            <h3>Article Processing Started!</h3>
+                        </div>
+                        <div class="result-content">
+                            <div class="result-item">
+                                <strong>Session ID:</strong>
+                                <span id="sessionId" class="session-id"></span>
+                            </div>
+                            <div class="result-item">
+                                <strong>Status:</strong>
+                                <span class="status-success">Processing in progress...</span>
+                            </div>
+                            <div class="result-item">
+                                <strong>Email:</strong>
+                                <span id="resultEmail"></span>
+                            </div>
+                            <div class="result-item">
+                                <strong>Article URL:</strong>
+                                <a href="#" id="resultUrl" target="_blank" class="article-link"></a>
+                            </div>
+                        </div>
+                        <div class="result-footer">
+                            <p><i class="fas fa-info-circle"></i> You will receive an email with the summary and insights once processing is complete.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Error Section -->
+                <div class="results-section" id="errorSection" style="display: none;">
+                    <div class="result-card error">
+                        <div class="result-header">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <h3>Processing Failed</h3>
+                        </div>
+                        <div class="result-content">
+                            <p id="errorMessage"></p>
+                        </div>
+                        <div class="result-footer">
+                            <button class="retry-btn" onclick="hideResults()">
+                                <i class="fas fa-redo"></i> Try Again
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features Section -->
+            <div class="features-section">
+                <h3>What You'll Get</h3>
+                <div class="features-grid">
+                    <div class="feature-item">
+                        <i class="fas fa-file-alt"></i>
+                        <h4>Article Summary</h4>
+                        <p>AI-generated 3-5 sentence summary of the article</p>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <h4>Key Insights</h4>
+                        <p>Extract 3-5 important insights and takeaways</p>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-envelope"></i>
+                        <h4>Email Delivery</h4>
+                        <p>Results delivered directly to your inbox</p>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-chart-line"></i>
+                        <h4>Data Storage</h4>
+                        <p>Results saved for future reference</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2024 Article Processor. Powered by AI & n8n automation.</p>
+        </footer>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>

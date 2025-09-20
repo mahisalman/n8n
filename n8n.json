@@ -1,0 +1,164 @@
+{
+  "name": "Article Processor Gemini Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "article-processor",
+        "methods": ["POST"]
+      },
+      "id": "Webhook_1",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{$json[\"article_url\"]}}",
+        "responseFormat": "string"
+      },
+      "id": "HttpRequest_1",
+      "name": "Fetch Article",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 2,
+      "position": [500, 300]
+    },
+    {
+      "parameters": {
+        "model": "gemini-pro",
+        "mode": "chat",
+        "messages": [
+          {
+            "role": "system",
+            "content": "You are a helpful assistant."
+          },
+          {
+            "role": "user",
+            "content": "Summarize the following article into 3–5 sentences:\n\n{{$json[\"data\"]}}"
+          }
+        ]
+      },
+      "id": "Gemini_1",
+      "name": "Summarize Article (Gemini)",
+      "type": "n8n-nodes-base.googleAi",
+      "typeVersion": 1,
+      "position": [750, 200]
+    },
+    {
+      "parameters": {
+        "model": "gemini-pro",
+        "mode": "chat",
+        "messages": [
+          {
+            "role": "system",
+            "content": "You are an expert analyst."
+          },
+          {
+            "role": "user",
+            "content": "Extract 3–5 key insights from the following article:\n\n{{$json[\"data\"]}}"
+          }
+        ]
+      },
+      "id": "Gemini_2",
+      "name": "Extract Insights (Gemini)",
+      "type": "n8n-nodes-base.googleAi",
+      "typeVersion": 1,
+      "position": [750, 400]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "sheetId": "<YOUR_GOOGLE_SHEET_ID>",
+        "range": "Sheet1!A:E",
+        "fields": {
+          "values": [
+            "={{$json[\"session_id\"]}}",
+            "={{$json[\"article_url\"]}}",
+            "={{$json[\"summary\"]}}",
+            "={{$json[\"insights\"]}}",
+            "={{$json[\"email\"]}}"
+          ]
+        }
+      },
+      "id": "GoogleSheets_1",
+      "name": "Google Sheets Append",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 3,
+      "position": [1000, 300]
+    },
+    {
+      "parameters": {
+        "toEmail": "={{$json[\"email\"]}}",
+        "subject": "Your Article Summary & Insights",
+        "text": "Hi,\n\nHere’s the summary and insights from your article:\n\n📌 Summary:\n{{$json[\"summary\"]}}\n\n💡 Insights:\n{{$json[\"insights\"]}}\n\nThanks,\nYour AI Agent"
+      },
+      "id": "Email_1",
+      "name": "Send Email",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 1,
+      "position": [1250, 300]
+    }
+  ],
+  "connections": {
+    "Webhook_1": {
+      "main": [
+        [
+          {
+            "node": "Fetch Article",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Article": {
+      "main": [
+        [
+          {
+            "node": "Summarize Article (Gemini)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Extract Insights (Gemini)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize Article (Gemini)": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets Append",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Insights (Gemini)": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets Append",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets Append": {
+      "main": [
+        [
+          {
+            "node": "Send Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}
