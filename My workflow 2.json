@@ -1,0 +1,334 @@
+{
+  "name": "My workflow 2",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=email : {{ $('Webhook').item.json.body.email }}\n\ntools:\n1. HTTP Request by Firecrawl : scrap data from the specific website as given by the user.\n\nYou are an agent that: \n1) Receive article data from a user given website link\n2) read all the data and summerize the data based on the following articles {{ $json.data.markdown }}\n3. Summarize the article into a short summary (3–5 sentences).\n4. Extract 3–5 key insights.\n5. Append or update row in sheet in Google Sheets : write the summary at the sumamry column of the sheet.\n6. Append or update row in sheet in Google Sheets : write the insights data into the insights column of the sheet.\n7. Send a message in Gmail : send mail to {{ $('Webhook').item.json.body.email }} , where the mail body would be the summary and the insight togather with the most beautiful format.\n8. Write the mail body with proper professional formats, keep spaces and enters one line after another line and bullets seperately.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -48,
+        -288
+      ],
+      "id": "bcc86972-999c-4a94-9dfb-68941704a4dd",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -96,
+        -96
+      ],
+      "id": "87901d69-96c8-42e1-8879-b04931e1f46a",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "gteYFX5OFDk5UDSo",
+          "name": "Google Gemini(PaLM) Api account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Webhook').item.json.body.session_id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        48,
+        -80
+      ],
+      "id": "af6db1c0-5e20-4807-a680-c1e5664f362e",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "8f901235-6202-4a78-955d-89ecc3996308",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -528,
+        -288
+      ],
+      "id": "748f817b-d8fc-4694-9829-c2ef67aa0b94",
+      "name": "Webhook",
+      "webhookId": "8f901235-6202-4a78-955d-89ecc3996308"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.firecrawl.dev/v2/scrape",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={    \n\"url\": \"{{ $json.body.article_url }}\",\n\"formats\": [\"markdown\", \"html\"]\n} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -320,
+        -288
+      ],
+      "id": "978c8fa7-abcf-4482-883e-5737a68a56da",
+      "name": "HTTP Request by Firecrawl",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "i3OrzIrsoeysZPUf",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1Pp4cDwP_15t-9e_jo5nElFfL8pmOxCG4-l4wRcOuyrY",
+          "mode": "list",
+          "cachedResultName": "To-do list",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Pp4cDwP_15t-9e_jo5nElFfL8pmOxCG4-l4wRcOuyrY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1604165536,
+          "mode": "list",
+          "cachedResultName": "Sheet3",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Pp4cDwP_15t-9e_jo5nElFfL8pmOxCG4-l4wRcOuyrY/edit#gid=1604165536"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Email": "={{ $('Webhook').item.json.body.email }}",
+            "Article URL": "={{ $('Webhook').item.json.body.article_url }}",
+            "Session ID": "={{ $('Webhook').item.json.body.session_id }}",
+            "Summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Summary', ``, 'string') }}",
+            "Insights": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Insights', ``, 'string') }}"
+          },
+          "matchingColumns": [
+            "Session ID"
+          ],
+          "schema": [
+            {
+              "id": "Session ID",
+              "displayName": "Session ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Article URL",
+              "displayName": "Article URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Summary",
+              "displayName": "Summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Insights",
+              "displayName": "Insights",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        192,
+        -96
+      ],
+      "id": "e6255f75-8b8b-4e51-9c48-bd628e55fc4f",
+      "name": "Append or update row in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "wnILw3NLR1yHY17F",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Webhook').item.json.body.email }}",
+        "subject": "={{ $('Webhook').item.json.body.article_url }}",
+        "emailType": "text",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        368,
+        -112
+      ],
+      "id": "d54c424e-d008-49c5-89c2-a567420c511a",
+      "name": "Send a message in Gmail",
+      "webhookId": "2d6bcbef-1a4f-408d-9a10-1d086298a884",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "5yZBTJH0dEQ2W9JD",
+          "name": "Gmail account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "mahisalman.app.n8n.cloud",
+            "user-agent": "python-httpx/0.28.1",
+            "content-length": "142",
+            "accept": "*/*",
+            "accept-encoding": "gzip, br",
+            "cdn-loop": "cloudflare; loops=1; subreqs=1",
+            "cf-connecting-ip": "182.163.99.178",
+            "cf-ew-via": "15",
+            "cf-ipcountry": "BD",
+            "cf-ray": "981fb69662bdd4ed-DAC",
+            "cf-visitor": "{\"scheme\":\"https\"}",
+            "cf-worker": "n8n.cloud",
+            "content-type": "application/json",
+            "x-forwarded-for": "182.163.99.178, 162.158.128.143",
+            "x-forwarded-host": "mahisalman.app.n8n.cloud",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "traefik-prod-users-gwc-54-58b646fcb5-7lrzb",
+            "x-is-trusted": "yes",
+            "x-real-ip": "182.163.99.178"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "email": "mahi.salman@gmail.com",
+            "article_url": "https://en.wikipedia.org/wiki/Bangladesh",
+            "session_id": "46b5bc56-53d9-434d-aba8-e595d071ced1"
+          },
+          "webhookUrl": "https://mahisalman.app.n8n.cloud/webhook/8f901235-6202-4a78-955d-89ecc3996308",
+          "executionMode": "production"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request by Firecrawl",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request by Firecrawl": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message in Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "e1bf0b11-9bd2-42fb-b51a-91dba589f1d4",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "0515e9b4445e4455ddd2deeca06f53f386282a346f6352171d8fde4b3971f086"
+  },
+  "id": "IZt2ZnoLL2ycids2",
+  "tags": []
+}
